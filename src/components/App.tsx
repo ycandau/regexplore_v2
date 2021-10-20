@@ -1,12 +1,13 @@
 //------------------------------------------------------------------------------
 // Imports
 
+import { ReactElement } from 'react';
 import './App.css';
 
 //------------------------------------------------------------------------------
 // Default export
 
-const App = () => {
+const App = (): ReactElement => {
   return (
     <main id="app">
       <section id="header">Header</section>
