@@ -2,6 +2,9 @@
 // Imports
 
 import { ReactElement } from 'react';
+
+import Header from './Header';
+
 import './App.css';
 
 //------------------------------------------------------------------------------
@@ -10,7 +13,7 @@ import './App.css';
 const App = (): ReactElement => {
   return (
     <main id="app">
-      <section id="header">Header</section>
+      <Header />
       <section id="regex">Regex</section>
       <section id="text">Text</section>
       <section id="graph">Graph</section>
