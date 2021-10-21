@@ -1,4 +1,5 @@
 #header {
+  transition: color 300ms, background-color 300ms;
   color: var(--colors-primary);
   background-color: var(--colors-bg);
   border-color: #181818;

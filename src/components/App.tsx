@@ -5,6 +5,7 @@ import { ReactElement } from 'react';
 
 import Header from './Header';
 
+import '../css/colors.css';
 import '../css/App.css';
 
 //------------------------------------------------------------------------------
