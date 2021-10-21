@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 
 import Header from './Header';
 
-import './App.css';
+import '../css/App.css';
 
 //------------------------------------------------------------------------------
 // Default export
