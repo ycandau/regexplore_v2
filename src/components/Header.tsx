@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // Imports
 
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
@@ -15,6 +15,10 @@ const Header = (): ReactElement => {
   const [dark, setDark] = useState(true);
 
   const toggleTheme = () => setDark((prev) => !prev);
+
+  useEffect(() => {
+    document.body.dataset.theme = dark ? 'dark' : 'light';
+  }, [dark]);
 
   return (
     <header id="header">

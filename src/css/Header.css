@@ -1,7 +1,7 @@
 #header {
-  color: teal;
+  color: var(--colors-primary);
+  background-color: var(--colors-bg);
   border-color: #181818;
-  background-color: #2b2828;
   border-style: solid;
   border-width: 1px 0 1px 0;
   display: flex;
