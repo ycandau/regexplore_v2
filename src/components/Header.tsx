@@ -1,7 +1,10 @@
 //------------------------------------------------------------------------------
 // Imports
 
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
 
 import '../css/Header.css';
 
@@ -9,6 +12,10 @@ import '../css/Header.css';
 // Default export
 
 const Header = (): ReactElement => {
+  const [dark, setDark] = useState(true);
+
+  const toggleTheme = () => setDark((prev) => !prev);
+
   return (
     <header id="header">
       <div className="logo">RegExplore</div>
@@ -18,7 +25,13 @@ const Header = (): ReactElement => {
       <div className="avatar">
         <div>Y</div>
       </div>
-      <div className="theme-toggle">Toggle</div>
+      <div className="theme-toggle">
+        <FontAwesomeIcon
+          icon={dark ? faMoon : faSun}
+          className="icon"
+          onClick={toggleTheme}
+        />
+      </div>
     </header>
   );
 };

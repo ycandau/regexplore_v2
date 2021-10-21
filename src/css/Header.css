@@ -8,11 +8,11 @@
   justify-content: center;
   align-items: stretch;
 }
-#header div {
+#header > div {
   display: flex;
   justify-content: stretch;
   align-items: center;
-  margin: 0 20px;
+  padding: 0 20px;
 }
 #header .logo {
   font-family: "Fira mono";
@@ -36,4 +36,7 @@
   height: 50px;
   border-radius: 25px;
   margin: 0;
+}
+#header .theme-toggle .icon {
+  font-size: 34px;
 }

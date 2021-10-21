@@ -10,12 +10,12 @@
   justify-content: center;
   align-items: stretch;
 
-  div {
+  & > div {
     display: flex;
     justify-content: stretch;
     align-items: center;
 
-    margin: 0 20px;
+    padding: 0 20px;
   }
 
   .logo {
@@ -45,5 +45,11 @@
     height: 50px;
     border-radius: 25px;
     margin: 0;
+  }
+
+  .theme-toggle {
+    .icon {
+      font-size: 34px;
+    }
   }
 }
