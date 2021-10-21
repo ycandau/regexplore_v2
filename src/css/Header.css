@@ -8,28 +8,23 @@
   justify-content: center;
   align-items: stretch;
 }
-
 #header div {
   display: flex;
   justify-content: stretch;
   align-items: center;
   margin: 0 20px;
 }
-
 #header .logo {
   font-family: "Fira mono";
   font-size: 36px;
 }
-
 #header .search {
   flex: 1;
 }
-
 #header .link {
   font-family: sans-serif;
   font-size: 24px;
 }
-
 #header .avatar div {
   display: flex;
   justify-content: center;
