@@ -14,8 +14,8 @@
 //------------------------------------------------------------------------------
 // Imports
 
-import { Match, Lexeme, Token } from './re_types';
-import warn, { Warnings } from './re_warnings';
+import { Match, Lexeme, Token, Warnings } from './re_types';
+import warn from './re_warnings';
 
 //------------------------------------------------------------------------------
 // Constants

@@ -7,6 +7,10 @@ export type Lexeme = {
   index: number;
   displayType: string;
   invalid?: boolean;
+  begin?: number;
+  end?: number;
+  negate?: boolean;
+  matches?: string;
 };
 
 export type Token = {
@@ -17,3 +21,14 @@ export type Token = {
   match?: Match;
   invalid?: boolean;
 };
+
+type Warning = {
+  label: string;
+  type: string;
+  issue: string;
+  msg: string;
+  count: number;
+  positions: number[];
+};
+
+export type Warnings = Map<string, Warning>;

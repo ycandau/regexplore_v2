@@ -7,6 +7,7 @@
 //     - All other types during validation.
 //------------------------------------------------------------------------------
 
+import { Warning, Warnings } from './re_types';
 import { Lexeme } from './re_types';
 
 interface WarningReference {
@@ -86,13 +87,6 @@ const staticInformation: WarningReferences = {
 };
 
 //------------------------------------------------------------------------------
-
-type Warning = WarningReference & {
-  count: number;
-  positions: number[];
-};
-
-export type Warnings = Map<string, Warning>;
 
 const warn =
   (staticInformation: WarningReferences) =>
