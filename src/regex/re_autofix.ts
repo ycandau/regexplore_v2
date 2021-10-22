@@ -2,8 +2,10 @@
 // Autofix the regex by generating a string from the RPN
 //------------------------------------------------------------------------------
 
-const generateRegexFromRPN = (rpn) => () => {
-  let stack = [];
+import { Token } from './re_parse';
+
+const generateRegexFromRPN = (rpn: Token[]) => () => {
+  let stack: string[] = [];
   rpn.forEach((token) => {
     let str1 = '';
     let str2 = '';
@@ -18,21 +20,21 @@ const generateRegexFromRPN = (rpn) => () => {
       case '?':
       case '*':
       case '+':
-        str1 = stack.pop();
+        str1 = stack.pop() ?? '';
         stack.push(str1 + token.label);
         break;
       case '|':
-        str1 = stack.pop();
-        str2 = stack.pop();
+        str1 = stack.pop() ?? '';
+        str2 = stack.pop() ?? '';
         stack.push(str2 + '|' + str1);
         break;
       case '(':
-        str1 = stack.pop();
+        str1 = stack.pop() ?? '';
         stack.push('(' + str1 + ')');
         break;
       case '~':
-        str1 = stack.pop();
-        str2 = stack.pop();
+        str1 = stack.pop() ?? '';
+        str2 = stack.pop() ?? '';
         stack.push(str2 + str1);
         break;
       default:
