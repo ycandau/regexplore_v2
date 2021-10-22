@@ -2,7 +2,7 @@
 // Autofix the regex by generating a string from the RPN
 //------------------------------------------------------------------------------
 
-import { Token } from './re_parse';
+import { Token } from './re_types';
 
 const generateRegexFromRPN = (rpn: Token[]) => () => {
   let stack: string[] = [];

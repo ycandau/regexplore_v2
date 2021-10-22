@@ -12,13 +12,14 @@
 //------------------------------------------------------------------------------
 // Imports
 
+import { Match, Lexeme, Token } from './re_types';
 import warn from './re_warnings';
 import { getParenClose } from './re_parse';
 
 //------------------------------------------------------------------------------
 // Validate that opening and closing parentheses match
 
-const validateParentheses = (tokens, lexemes, warnings) => {
+const validateParentheses = (tokens: Token[], lexemes: Lexeme[], warnings) => {
   let parentheses = [];
 
   for (const token of tokens) {
