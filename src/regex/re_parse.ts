@@ -14,6 +14,7 @@
 //------------------------------------------------------------------------------
 // Imports
 
+import { Match, Lexeme, Token } from './re_types';
 import warn, { Warnings } from './re_warnings';
 
 //------------------------------------------------------------------------------
@@ -28,8 +29,6 @@ const spaces = new Set(' \\f\\n\\r\\t\\v');
 //------------------------------------------------------------------------------
 // Matching functions
 
-type Match = (ch: string) => boolean;
-
 const matchAll = (ch: string) => true;
 
 const match = (label: string) => (ch: string) => ch === label;
@@ -40,15 +39,6 @@ const matchNotIn = (set: Set<string>) => (ch: string) => !set.has(ch);
 
 //------------------------------------------------------------------------------
 // Create tokens
-
-type Token = {
-  label: string;
-  type: string;
-  pos: number | null;
-  index: number | null;
-  match?: Match;
-  invalid?: boolean;
-};
 
 const value =
   (label: string, type: string, match: Match) =>
@@ -124,15 +114,6 @@ const typeToDisplayType: {
 
 //------------------------------------------------------------------------------
 // Helper functions for lexemes
-
-export type Lexeme = {
-  label: string;
-  type: string;
-  pos: number;
-  index: number;
-  displayType: string;
-  invalid?: boolean;
-};
 
 const addLexeme = (
   lexemes: Lexeme[],

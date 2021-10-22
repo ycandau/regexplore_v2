@@ -9,29 +9,30 @@
 //------------------------------------------------------------------------------
 // Imports
 
+import { Lexeme, Token } from './re_types';
 import { getConcat } from './re_parse';
 
 //------------------------------------------------------------------------------
 // Helper function to decide when to add an implicit concatenation
 
-const isValue = (token) =>
+const isValue = (token: Token) =>
   token.type && token.type !== '|' && token.type !== '(';
 
 //------------------------------------------------------------------------------
 // Transfer the stacked operator to the RPN queue if it is at the top
 
-const transferOperator = (type, rpn, operators) => {
+const transferOperator = (type: string, rpn: Token[], operators: Token[]) => {
   const top = operators[operators.length - 1];
   if (top && top.type === type) {
     const operator = operators.pop();
-    rpn.push(operator);
+    if (operator) rpn.push(operator);
   }
 };
 
 //------------------------------------------------------------------------------
 // Add an implicit concat when necessary
 
-const concat = (rpn, operators) => {
+const concat = (rpn: Token[], operators: Token[]) => {
   transferOperator('~', rpn, operators);
   operators.push(getConcat());
 };
@@ -39,7 +40,7 @@ const concat = (rpn, operators) => {
 //------------------------------------------------------------------------------
 // Main conversion function
 
-const convertToRPN = (tokens, lexemes) => {
+const convertToRPN = (tokens: Token[], lexemes: Lexeme[]) => {
   const rpn = [];
   const operators = [];
   let prevToken = {};

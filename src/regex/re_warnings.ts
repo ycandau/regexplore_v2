@@ -7,7 +7,7 @@
 //     - All other types during validation.
 //------------------------------------------------------------------------------
 
-import { Lexeme } from './re_parse';
+import { Lexeme } from './re_types';
 
 interface WarningReference {
   label: string;
