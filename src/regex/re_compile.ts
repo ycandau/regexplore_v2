@@ -48,7 +48,7 @@ import getTokenInfo from './re_token_info';
 
 //------------------------------------------------------------------------------
 
-const compile = (regex) => {
+const compile = (regex: string) => {
   const { lexemes, tokens, warnings } = parse(regex);
   const validTokens = validate(tokens, lexemes, warnings);
   const rpn = convertToRPN(validTokens, lexemes);
