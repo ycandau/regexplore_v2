@@ -7,7 +7,27 @@
 //     - All other types during validation.
 //------------------------------------------------------------------------------
 
-const staticInformation = {
+type Warnings = {
+  [key: string]: {
+    label: string;
+    type: string;
+    issue: string;
+    msg: string;
+  };
+};
+
+type Lexeme = {
+  label: string;
+  type: string;
+  pos: number;
+  index: number;
+  displayType: string;
+  invalid?: boolean;
+};
+
+//------------------------------------------------------------------------------
+
+const staticInformation: Warnings = {
   '[': {
     label: '[',
     type: '[',
@@ -34,13 +54,13 @@ const staticInformation = {
   },
   '**': {
     type: '**',
-    // label from parser
+    label: '', // label from parser
     issue: 'Redundant quantifiers',
     msg: 'The parser is simplifying the quantifiers to a single one.',
   },
   'E*': {
     type: 'E*',
-    // label from parser
+    label: '', // label from parser
     issue: 'A quantifier follows an empty value',
     msg: 'The parser is ignoring the quantifier.',
   },
@@ -73,7 +93,15 @@ const staticInformation = {
 //------------------------------------------------------------------------------
 
 const warn =
-  (staticInformation) => (type, pos, index, lexemes, warnings, info) => {
+  (staticInformation: Warnings) =>
+  (
+    type: string,
+    pos: number,
+    index: number,
+    lexemes: Lexeme[],
+    warnings: Map<string, any>,
+    info: object
+  ) => {
     lexemes[index].invalid = true;
 
     if (warnings.has(type)) {
