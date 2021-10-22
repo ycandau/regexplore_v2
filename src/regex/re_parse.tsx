@@ -14,7 +14,7 @@
 //------------------------------------------------------------------------------
 // Imports
 
-import warn from './re_warnings';
+import warn, { Warnings } from './re_warnings';
 
 //------------------------------------------------------------------------------
 // Constants
@@ -28,40 +28,59 @@ const spaces = new Set(' \\f\\n\\r\\t\\v');
 //------------------------------------------------------------------------------
 // Matching functions
 
-const matchAll = (ch) => true;
+type Match = (ch: string) => boolean;
 
-const match = (label) => (ch) => ch === label;
+const matchAll = (ch: string) => true;
 
-const matchIn = (set) => (ch) => set.has(ch);
+const match = (label: string) => (ch: string) => ch === label;
 
-const matchNotIn = (set) => (ch) => !set.has(ch);
+const matchIn = (set: Set<string>) => (ch: string) => set.has(ch);
+
+const matchNotIn = (set: Set<string>) => (ch: string) => !set.has(ch);
 
 //------------------------------------------------------------------------------
 // Create tokens
 
-const value = (label, type, match) => (pos, index) => ({
-  label,
-  type,
-  pos,
-  index,
-  match,
-});
+type Token = {
+  label: string;
+  type: string;
+  pos: number | null;
+  index: number | null;
+  match?: Match;
+  invalid?: boolean;
+};
 
-const operator = (label) => (pos, index) => ({
-  label,
-  type: label,
-  pos,
-  index,
-});
+const value =
+  (label: string, type: string, match: Match) =>
+  (pos: number, index: number): Token => ({
+    label,
+    type,
+    pos,
+    index,
+    match,
+  });
+
+const operator =
+  (label: string) =>
+  (pos: number | null, index: number | null): Token => ({
+    label,
+    type: label,
+    pos,
+    index,
+  });
 
 const getConcat = () => operator('~')(null, null);
 
-const getParenClose = (pos, index) => operator(')')(pos, index);
+const getParenClose = (pos: number, index: number) => operator(')')(pos, index);
 
 //------------------------------------------------------------------------------
 // Satic tokens
 
-const staticTokens = {
+type StaticTokens = {
+  [key: string]: (pos: number, index: number) => Token;
+};
+
+const staticTokens: StaticTokens = {
   // Values
   '.': value('.', '.', () => true),
 
@@ -81,7 +100,9 @@ const staticTokens = {
   ')': operator(')'),
 };
 
-const typeToDisplayType = {
+const typeToDisplayType: {
+  [key: string]: string;
+} = {
   charLiteral: 'value',
   escapedChar: 'value',
   charClass: 'value-special',
@@ -104,7 +125,21 @@ const typeToDisplayType = {
 //------------------------------------------------------------------------------
 // Helper functions for lexemes
 
-const addLexeme = (lexemes, label, type, pos) => {
+export type Lexeme = {
+  label: string;
+  type: string;
+  pos: number;
+  index: number;
+  displayType: string;
+  invalid?: boolean;
+};
+
+const addLexeme = (
+  lexemes: Lexeme[],
+  label: string,
+  type: string,
+  pos: number
+) => {
   const lexeme = {
     label,
     type,
@@ -115,20 +150,26 @@ const addLexeme = (lexemes, label, type, pos) => {
   lexemes.push(lexeme);
 };
 
-const describe = (lexeme, info) => {
+const describe = (lexeme: Lexeme, info: object) => {
   Object.entries(info).forEach(([key, value]) => (lexeme[key] = value));
 };
 
 //------------------------------------------------------------------------------
 // Bracket expressions: Helpers
 
-const eat = (type, state) => {
+type State = {
+  regex: string;
+  pos: number;
+  lexemes: Lexeme[];
+};
+
+const eat = (type: string, state: State) => {
   const { regex, pos, lexemes } = state;
   addLexeme(lexemes, regex[pos], type, pos);
   state.pos++;
 };
 
-const tryEat = (label, type, state) => {
+const tryEat = (label: string, type: string, state: State) => {
   if (state.regex[state.pos] === label) {
     eat(type, state);
     return true;
@@ -136,23 +177,28 @@ const tryEat = (label, type, state) => {
   return false;
 };
 
-const read = (type, state, action) => {
+const read = (type: string, state: State, set: Set<string>) => {
   const { regex, pos, lexemes } = state;
   const label = regex[pos];
   addLexeme(lexemes, label, type, pos);
-  action(label);
+  set.add(label);
   state.pos++;
 };
 
-const tryRead = (label, type, state, action) => {
+const tryRead = (
+  label: string,
+  type: string,
+  state: State,
+  set: Set<string>
+) => {
   if (state.regex[state.pos] === label) {
-    read(type, state, action);
+    read(type, state, set);
     return true;
   }
   return false;
 };
 
-const tryReadBracketRange = (state, action) => {
+const tryReadBracketRange = (state: State, set: Set<string>) => {
   const { regex, pos } = state;
 
   if (
@@ -166,7 +212,7 @@ const tryReadBracketRange = (state, action) => {
   const rangeLow = regex.charCodeAt(pos);
   const rangeHigh = regex.charCodeAt(pos + 2);
   for (let i = rangeLow; i <= rangeHigh; i++) {
-    action(String.fromCharCode(i));
+    set.add(String.fromCharCode(i));
   }
 
   eat('bracketRangeLow', state);
@@ -179,9 +225,13 @@ const tryReadBracketRange = (state, action) => {
 //------------------------------------------------------------------------------
 // Bracket expressions: Main
 
-const readBracketExpression = (regex, pos, lexemes, warnings) => {
-  const set = new Set();
-  const add = (label) => set.add(label);
+const readBracketExpression = (
+  regex: string,
+  pos: number,
+  lexemes: Lexeme[],
+  warnings: Warnings
+) => {
+  const set: Set<string> = new Set();
   const state = { regex, pos, lexemes };
   const begin = lexemes.length;
 
@@ -189,12 +239,12 @@ const readBracketExpression = (regex, pos, lexemes, warnings) => {
   const negate = tryEat('^', '^', state);
 
   // Special characters are treated as literals at the beginning
-  tryRead(']', 'bracketChar', state, add) ||
-    tryRead('-', 'bracketChar', state, add);
+  tryRead(']', 'bracketChar', state, set) ||
+    tryRead('-', 'bracketChar', state, set);
 
   // Try a character range, otherwise read a chararacter literal
   while (state.pos < regex.length && regex[state.pos] !== ']') {
-    tryReadBracketRange(state, add) || read('bracketChar', state, add);
+    tryReadBracketRange(state, set) || read('bracketChar', state, set);
   }
 
   // Finalize lexemes
@@ -231,9 +281,9 @@ const readBracketExpression = (regex, pos, lexemes, warnings) => {
 //------------------------------------------------------------------------------
 // Main parsing function
 
-const parse = (regex) => {
+const parse = (regex: string) => {
   let pos = 0;
-  const lexemes = [];
+  const lexemes: Lexeme[] = [];
   const tokens = [];
   const warnings = new Map();
 

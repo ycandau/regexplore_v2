@@ -7,27 +7,22 @@
 //     - All other types during validation.
 //------------------------------------------------------------------------------
 
-type Warnings = {
-  [key: string]: {
-    label: string;
-    type: string;
-    issue: string;
-    msg: string;
-  };
-};
+import { Lexeme } from './re_parse';
 
-type Lexeme = {
+interface WarningReference {
   label: string;
   type: string;
-  pos: number;
-  index: number;
-  displayType: string;
-  invalid?: boolean;
+  issue: string;
+  msg: string;
+}
+
+type WarningReferences = {
+  [key: string]: WarningReference;
 };
 
 //------------------------------------------------------------------------------
 
-const staticInformation: Warnings = {
+const staticInformation: WarningReferences = {
   '[': {
     label: '[',
     type: '[',
@@ -92,26 +87,33 @@ const staticInformation: Warnings = {
 
 //------------------------------------------------------------------------------
 
+type Warning = WarningReference & {
+  count: number;
+  positions: number[];
+};
+
+export type Warnings = Map<string, Warning>;
+
 const warn =
-  (staticInformation: Warnings) =>
+  (staticInformation: WarningReferences) =>
   (
     type: string,
     pos: number,
     index: number,
     lexemes: Lexeme[],
-    warnings: Map<string, any>,
-    info: object
+    warnings: Warnings,
+    info?: object
   ) => {
     lexemes[index].invalid = true;
 
-    if (warnings.has(type)) {
-      const warning = warnings.get(type);
-      warning.count += 1;
-      warning.positions.push(pos);
+    const existingWarning = warnings.get(type);
+    if (existingWarning) {
+      existingWarning.count += 1;
+      existingWarning.positions.push(pos);
       return;
     }
 
-    const warning = {
+    const warning: Warning = {
       ...staticInformation[type],
       ...info,
       count: 1,
